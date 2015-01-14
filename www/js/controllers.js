@@ -1,43 +1,4 @@
 angular.module('bucketList.controllers', [])
-	.controller('SignUpCtrl', ['$scope', '$rootScope', '$firebaseAuth', '$window',
-		function ($scope, $rootScope, $firebaseAuth, $window) {
-			$scope.user = {
-				email: "",
-				password: ""
-			};
-			$scope.createUser = function() {
-				var email = this.user.email;
-				var password = this.user.password;
-
-				if (!email || !password) {
-					$rootScope.notify("Please enter valid credentials")
-					return false;
-				}
-
-				$rootScope.show('Please wait.. Registering');
-				$rootScope.auth.$createUser(email, password, function (error, user) {
-					if (!error) {
-						$rootScope.hide();
-						$rootScope.userEmail = user.email;
-						$window.location.href = ('#/bucket/list');
-					}
-					else {
-						$rootScope.hide();
-						if (error.code == 'INVALID_EMAIL') {
-							$rootScope.notify('Invalid Email Address');
-						}
-						else if (error.code == 'EMAIL_TAKEN') {
-							$rootScope.notify('Email Address already taken');
-						}
-						else {
-							$rootScope.notify('Oops something went wrong. Please try again later');
-						}
-					}
-				});
-			}
-		}
-	])
-
 	.controller('SignInCtrl', [
 		'$scope', '$rootScope', '$firebaseAuth', '$window',
 		function($scope, $rootScope, $firebaseAuth, $window) {
@@ -45,7 +6,7 @@ angular.module('bucketList.controllers', [])
 			$rootScope.checkSession();
 			$scope.user = {
 				email: "",
-				password: "",
+				password: ""
 			};
 			$scope.validateUser = function() {
 				$rootScope.show('Please wait.. Authenticating');
@@ -59,8 +20,7 @@ angular.module('bucketList.controllers', [])
 				$rootScope.auth.$login('password', {
 					email: email,
 					password: password
-				})
-				.then(function(user) {
+				}).then(function(user) {
 					$rootScope.hide();
 					$rootScope.userEmail = user.email;
 					$window.location.href = ('#/bucket/list');
@@ -83,20 +43,59 @@ angular.module('bucketList.controllers', [])
 		}
 	])
 
+.controller('SignUpCtrl', ['$scope', '$rootScope', '$firebaseAuth', '$window',
+		function($scope, $rootScope, $firebaseAuth, $window) {
+			$scope.user = {
+				email: "",
+				password: ""
+			};
+			$scope.createUser = function() {
+				var email = this.user.email;
+				var password = this.user.password;
+
+				if (!email || !password) {
+					$rootScope.notify("Please enter valid credentials")
+					return false;
+				}
+
+				$rootScope.show('Please wait.. Registering');
+				$rootScope.auth.$createUser(email, password, function(error, user) {
+					if (!error) {
+						$rootScope.hide();
+						$rootScope.userEmail = user.email;
+						$window.location.href = ('#/bucket/list');
+					}
+					else {
+						$rootScope.hide();
+						if (error.code == 'INVALID_EMAIL') {
+							$rootScope.notify('Invalid Email Address');
+						}
+						else if (error.code == 'EMAIL_TAKEN') {
+							$rootScope.notify('Email Address already taken');
+						}
+						else {
+							$rootScope.notify('Oops something went wrong. Please try again later');
+						}
+					}
+				});
+			}
+		}
+	])
+
 	.controller('myListCtrl', function($rootScope, $scope, $window, $ionicModal, $firebase) {
 		$rootScope.show("Please wait... Processing");
 		$scope.list = [];
+    var x
 		var bucketListRef = new Firebase($rootScope.baseUrl + escapeEmailAddress($rootScope.userEmail));
 		bucketListRef.on('value', function(snapshot) {
-			var data = snapshot.val();
-
-			$scope.list = []
-
+			var data = snapshot.val();   
+			$scope.list = [];
 			for (var key in data) {
-				if (data.hasOwnPropery(key)) {
+				if (data.hasOwnProperty(key)) {
 					if (data[key].isCompleted == false) {
 						data[key].key = key;
 						$scope.list.push(data[key]);
+            var x
 					}
 				}
 			}
@@ -159,12 +158,10 @@ angular.module('bucketList.controllers', [])
 
 		$scope.createNew = function() {
 			var item = this.data.item;
-
 			if (!item) return;
-
 			$scope.modal.hide();
-			$rootScope.show();
-			$rootScope.show()("Please wait... Creating new");
+			$rootScope.show();     
+			$rootScope.show("Please wait... Creating new");
 
 			var form = {
 				item: item,
@@ -189,7 +186,7 @@ angular.module('bucketList.controllers', [])
 			var data = snapshot.val();
 
 			for (var key in data) {
-				if (data.hasOwnPropery(key)) {
+				if (data.hasOwnProperty(key)) {
 					if (data[key].isCompleted == true) {
 						data[key].key = key;
 						$scope.list.push(data[key]);
